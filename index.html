@@ -220,7 +220,6 @@ function carregarLocal(chave) {
   }
 }
 
-// ✅ FUNÇÃO PARA BAIXAR ARQUIVO NO CELULAR
 function baixarArquivo(nomeArquivo, conteudo) {
   const blob = new Blob([JSON.stringify(conteudo, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -312,7 +311,7 @@ function finalizarPedido() {
   itensPedidoAtual.forEach(i => valorPedido += i.preco);
 
   const pedido = {
-    dataHora: new Date().toLocaleString(),
+    dataHora: new Date().toLocaleString('pt-BR'),
     nomeCliente: nomeCli,
     endereco: endCli,
     itens: [...itensPedidoAtual],
@@ -364,32 +363,37 @@ function carregarHistorico() {
   });
 }
 
+// ✅ IMPRESSÃO BEM ORGANIZADA
 function imprimirPedido() {
   const nomeCli = document.getElementById('nomeCliente').value;
   const endCli = document.getElementById('enderecoCliente').value;
   let totalPedido = 0;
-  let texto = '=== DK HAMBURGUERIA ===\\n';
+  let texto = '==============================\\n';
+  texto += '        DK HAMBURGUERIA        \\n';
+  texto += '==============================\\n';
   texto += 'Cliente: ' + nomeCli + '\\n';
   texto += 'Endereço: ' + endCli + '\\n';
+  texto += '------------------------------\\n';
   itensPedidoAtual.forEach(i => {
-    texto += i.nome + ' R$ ' + i.preco.toFixed(2) + '\\n';
+    texto += i.nome + ' .......... R$ ' + i.preco.toFixed(2) + '\\n';
     totalPedido += i.preco;
   });
-  texto += '------------------------\\n';
-  texto += 'TOTAL: R$ ' + totalPedido.toFixed(2) + '\\n';
+  texto += '------------------------------\\n';
+  texto += 'TOTAL ................ R$ ' + totalPedido.toFixed(2) + '\\n';
+  texto += '==============================\\n';
   window.open('data:text/plain;charset=utf-8,' + encodeURIComponent(texto));
 }
 
-// ✅ SALVA E FAZ DOWNLOAD DAS VENDAS DO DIA
+// ✅ SALVAR E BAIXAR VENDAS DO DIA
 function salvarEDownloadDia() {
   calcularTotalDoDia();
   const dataArquivo = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
   baixarArquivo('vendas_dk_hamburgueria_' + dataArquivo + '.json', historicoPedidos);
-  alert('💾 Vendas do dia salvas e baixadas no celular! Agora você pode limpar o histórico!');
+  alert('💾 Vendas do dia salvas e baixadas! Agora pode limpar o histórico!');
 }
 
 function limparHistoricoDia() {
-  if (!confirm('⚠️ Tem certeza que quer apagar todo o histórico do dia? Primeiro faça o download!')) {
+  if (!confirm('⚠️ Tem certeza? Primeiro faça o download das vendas!')) {
     return;
   }
   historicoPedidos = [];
