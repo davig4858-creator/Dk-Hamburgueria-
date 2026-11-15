@@ -220,8 +220,9 @@ function carregarLocal(chave) {
   }
 }
 
-function baixarArquivo(nomeArquivo, conteudo) {
-  const blob = new Blob([JSON.stringify(conteudo, null, 2)], { type: 'application/json' });
+// ✅ BAIXAR ARQUIVO TEXTO
+function baixarArquivoTexto(nomeArquivo, conteudoTexto) {
+  const blob = new Blob([conteudoTexto], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -384,16 +385,37 @@ function imprimirPedido() {
   window.open('data:text/plain;charset=utf-8,' + encodeURIComponent(texto));
 }
 
-// ✅ SALVAR E BAIXAR VENDAS DO DIA
+// ✅ SALVAR E BAIXAR RELATÓRIO NO ESTILO DA FOTO
 function salvarEDownloadDia() {
   calcularTotalDoDia();
   const dataArquivo = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
-  baixarArquivo('vendas_dk_hamburgueria_' + dataArquivo + '.json', historicoPedidos);
-  alert('💾 Vendas do dia salvas e baixadas! Agora pode limpar o histórico!');
+  let relatorio = '========================================\\n';
+  relatorio += '            RELATÓRIO GERAL             \\n';
+  relatorio += '========================================\\n';
+  relatorio += 'Gerado em: ' + new Date().toLocaleString('pt-BR') + '\\n';
+  relatorio += 'Total de vendas: ' + historicoPedidos.length + '\\n';
+  relatorio += '========================================\\n';
+
+  for(let indice = 0; indice < historicoPedidos.length; indice++){
+    const ped = historicoPedidos[indice];
+    relatorio += (indice + 1) + '. ' + ped.dataHora + ' | ' + ped.nomeCliente + '\\n';
+    ped.itens.forEach(item => {
+      relatorio += '  ' + item.nome + ' x1 = R$ ' + item.preco.toFixed(2) + '\\n';
+    });
+    relatorio += '  TOTAL: R$ ' + ped.total.toFixed(2) + '\\n';
+    relatorio += '----------------------------------------\\n';
+  }
+
+  let totalGeral = 0;
+  historicoPedidos.forEach(p => totalGeral += p.total);
+  relatorio += 'TOTAL GERAL: R$ ' + totalGeral.toFixed(2) + '\\n';
+
+  baixarArquivoTexto('todas_vendas_' + dataArquivo + '.txt', relatorio);
+  alert('💾 Relatório baixado no celular! Agora você pode limpar o histórico!');
 }
 
 function limparHistoricoDia() {
-  if (!confirm('⚠️ Tem certeza? Primeiro faça o download das vendas!')) {
+  if (!confirm('⚠️ Tem certeza? Primeiro faça o download do relatório!')) {
     return;
   }
   historicoPedidos = [];
