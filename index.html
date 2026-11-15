@@ -363,25 +363,27 @@ function carregarHistorico() {
   });
 }
 
-// ✅ IMPRESSÃO BEM ORGANIZADA
+// ✅ IMPRESSÃO PARA RAWBT
 function imprimirPedido() {
   const nomeCli = document.getElementById('nomeCliente').value;
   const endCli = document.getElementById('enderecoCliente').value;
   let totalPedido = 0;
-  let texto = '==============================\n';
-  texto += '        DK HAMBURGUERIA        \n';
-  texto += '==============================\n';
-  texto += 'Cliente: ' + nomeCli + '\n';
-  texto += 'Endereço: ' + endCli + '\n';
-  texto += '------------------------------\n';
+  let texto = '==============================\\n';
+  texto += '        DK HAMBURGUERIA        \\n';
+  texto += '==============================\\n';
+  texto += 'Cliente: ' + nomeCli + '\\n';
+  texto += 'Endereço: ' + endCli + '\\n';
+  texto += '------------------------------\\n';
   itensPedidoAtual.forEach(i => {
-    texto += i.nome + ' .......... R$ ' + i.preco.toFixed(2) + '\n';
+    texto += i.nome + ' .......... R$ ' + i.preco.toFixed(2) + '\\n';
     totalPedido += i.preco;
   });
-  texto += '------------------------------\n';
-  texto += 'TOTAL ................ R$ ' + totalPedido.toFixed(2) + '\n';
-  texto += '==============================\n';
-  window.open('data:text/plain;charset=utf-8,' + encodeURIComponent(texto));
+  texto += '------------------------------\\n';
+  texto += 'TOTAL ................ R$ ' + totalPedido.toFixed(2) + '\\n';
+  texto += '==============================\\n';
+
+  const linkRawbt = 'rawbt://print?text=' + encodeURIComponent(texto);
+  window.location.href = linkRawbt;
 }
 
 // ✅ RELATÓRIO SIMPLES E FÁCIL DE LER
@@ -389,28 +391,28 @@ function salvarEDownloadDia() {
   calcularTotalDoDia();
   const dataArquivo = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
   let relatorio = '';
-  relatorio += 'DK HAMBURGUERIA - RELATÓRIO DE VENDAS\n';
-  relatorio += 'Gerado em: ' + new Date().toLocaleString('pt-BR') + '\n';
-  relatorio += 'Quantidade de pedidos: ' + historicoPedidos.length + '\n';
-  relatorio += '----------------------------------------\n';
+  relatorio += 'DK HAMBURGUERIA - RELATÓRIO DE VENDAS\\n';
+  relatorio += 'Gerado em: ' + new Date().toLocaleString('pt-BR') + '\\n';
+  relatorio += 'Quantidade de pedidos: ' + historicoPedidos.length + '\\n';
+  relatorio += '----------------------------------------\\n';
 
   for(let indice = 0; indice < historicoPedidos.length; indice++){
     const ped = historicoPedidos[indice];
-    relatorio += 'PEDIDO ' + (indice + 1) + '\n';
-    relatorio += 'Data/Hora: ' + ped.dataHora + '\n';
-    relatorio += 'Cliente: ' + ped.nomeCliente + '\n';
-    relatorio += 'Endereço: ' + ped.endereco + '\n';
-    relatorio += 'Itens: \n';
+    relatorio += 'PEDIDO ' + (indice + 1) + '\\n';
+    relatorio += 'Data/Hora: ' + ped.dataHora + '\\n';
+    relatorio += 'Cliente: ' + ped.nomeCliente + '\\n';
+    relatorio += 'Endereço: ' + ped.endereco + '\\n';
+    relatorio += 'Itens: \\n';
     ped.itens.forEach(item => {
-      relatorio += '  - ' + item.nome + '  R$ ' + item.preco.toFixed(2) + '\n';
+      relatorio += '  - ' + item.nome + '  R$ ' + item.preco.toFixed(2) + '\\n';
     });
-    relatorio += 'TOTAL DO PEDIDO: R$ ' + ped.total.toFixed(2) + '\n';
-    relatorio += '----------------------------------------\n';
+    relatorio += 'TOTAL DO PEDIDO: R$ ' + ped.total.toFixed(2) + '\\n';
+    relatorio += '----------------------------------------\\n';
   }
 
   let totalGeral = 0;
   historicoPedidos.forEach(p => totalGeral += p.total);
-  relatorio += 'TOTAL GERAL DO DIA: R$ ' + totalGeral.toFixed(2) + '\n';
+  relatorio += 'TOTAL GERAL DO DIA: R$ ' + totalGeral.toFixed(2) + '\\n';
 
   baixarArquivoTexto('todas_vendas_' + dataArquivo + '.txt', relatorio);
   alert('💾 Relatório simples baixado! Agora você pode limpar o histórico!');
