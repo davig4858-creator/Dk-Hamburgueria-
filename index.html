@@ -287,7 +287,6 @@ function finalizarPedido() {
   carregarHistorico();
   calcularTotalDoDia();
 
-  // Limpa para o próximo pedido
   itensPedidoAtual = [];
   document.getElementById('nomeCliente').value = '';
   document.getElementById('enderecoCliente').value = '';
@@ -331,15 +330,15 @@ function imprimirPedido() {
   const nomeCli = document.getElementById('nomeCliente').value;
   const endCli = document.getElementById('enderecoCliente').value;
   let totalPedido = 0;
-  let texto = '=== DK HAMBURGUERIA ===\n';
-  texto += 'Cliente: ' + nomeCli + '\n';
-  texto += 'Endereço: ' + endCli + '\n';
+  let texto = '=== DK HAMBURGUERIA ===\\n';
+  texto += 'Cliente: ' + nomeCli + '\\n';
+  texto += 'Endereço: ' + endCli + '\\n';
   itensPedidoAtual.forEach(i => {
-    texto += i.nome + ' R$ ' + i.preco.toFixed(2) + '\n';
+    texto += i.nome + ' R$ ' + i.preco.toFixed(2) + '\\n';
     totalPedido += i.preco;
   });
-  texto += '------------------------\n';
-  texto += 'TOTAL: R$ ' + totalPedido.toFixed(2) + '\n';
+  texto += '------------------------\\n';
+  texto += 'TOTAL: R$ ' + totalPedido.toFixed(2) + '\\n';
   window.open('data:text/plain;charset=utf-8,' + encodeURIComponent(texto));
 }
 
@@ -348,6 +347,7 @@ function salvarVendasDia() {
   alert('💾 Vendas do dia salvas!');
 }
 
+// ✅ FUNÇÃO CADASTRAR LANCHE CORRIGIDA
 function cadastrarLanche() {
   const nomeInput = document.getElementById('nomeLancheNovo');
   const precoInput = document.getElementById('precoLancheNovo');
