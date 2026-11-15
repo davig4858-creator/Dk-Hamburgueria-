@@ -164,6 +164,7 @@ input {
   <h2>Novo Pedido</h2>
   <input type="text" id="nomeCliente" placeholder="Nome do cliente">
   <input type="text" id="enderecoCliente" placeholder="Endereço">
+  <input type="number" id="taxaEntrega" step="0.01" placeholder="Taxa de Entrega R$">
 
   <h3>🍔 Lanches disponíveis:</h3>
   <div id="listaLanchesPedido"></div>
@@ -301,19 +302,22 @@ function removerItem(indice) {
 function finalizarPedido() {
   const nomeCli = document.getElementById('nomeCliente').value.trim();
   const endCli = document.getElementById('enderecoCliente').value.trim();
+  const taxaEntrega = Number(document.getElementById('taxaEntrega').value) || 0;
 
   if (!nomeCli || itensPedidoAtual.length === 0) {
     alert('⚠️ Preencha o nome do cliente e adicione os lanches!');
     return;
   }
 
-  let valorPedido = 0;
-  itensPedidoAtual.forEach(i => valorPedido += i.preco);
+  let valorLanches = 0;
+  itensPedidoAtual.forEach(i => valorLanches += i.preco);
+  let valorPedido = valorLanches + taxaEntrega;
 
   const pedido = {
     dataHora: new Date().toLocaleString('pt-BR'),
     nomeCliente: nomeCli,
     endereco: endCli,
+    taxaEntrega: taxaEntrega,
     itens: [...itensPedidoAtual],
     total: valorPedido
   };
@@ -327,6 +331,7 @@ function finalizarPedido() {
   itensPedidoAtual = [];
   document.getElementById('nomeCliente').value = '';
   document.getElementById('enderecoCliente').value = '';
+  document.getElementById('taxaEntrega').value = '';
   atualizarItensPedido();
   carregarLanchesPedido();
 
@@ -356,6 +361,7 @@ function carregarHistorico() {
         ${ped.dataHora}<br>
         <strong>Cliente: ${ped.nomeCliente}</strong><br>
         Endereço: ${ped.endereco}<br>
+        Taxa de Entrega: R$ ${ped.taxaEntrega.toFixed(2)}<br>
         ${itensTexto}
         <strong>TOTAL: R$ ${ped.total.toFixed(2)}</strong>
       </div>
@@ -367,15 +373,16 @@ function carregarHistorico() {
 function imprimirPedido() {
   const nomeCli = document.getElementById('nomeCliente').value;
   const endCli = document.getElementById('enderecoCliente').value;
+  const taxaEntrega = Number(document.getElementById('taxaEntrega').value) || 0;
   let totalPedido = 0;
 
   let texto = 'DK HAMBURGUERIA\n';
   texto += '-------------------------\n';
   texto += 'CLIENTE: ' + nomeCli + '\n';
   texto += 'ENDEREÇO: ' + endCli + '\n';
+  texto += 'TAXA DE ENTREGA: R$ ' + taxaEntrega.toFixed(2) + '\n';
   texto += '-------------------------\n';
 
-  // Agrupa os itens para não repetir várias vezes o mesmo lanche
   const agrupado = {};
   itensPedidoAtual.forEach(i => {
     if(!agrupado[i.nome]) {
@@ -391,6 +398,7 @@ function imprimirPedido() {
     totalPedido += subtotal;
   }
 
+  totalPedido += taxaEntrega;
   texto += '-------------------------\n';
   texto += 'TOTAL: R$ ' + totalPedido.toFixed(2) + '\n';
   texto += '-------------------------\n';
@@ -415,6 +423,7 @@ function salvarEDownloadDia() {
     relatorio += 'Data/Hora: ' + ped.dataHora + '\n';
     relatorio += 'Cliente: ' + ped.nomeCliente + '\n';
     relatorio += 'Endereço: ' + ped.endereco + '\n';
+    relatorio += 'Taxa de Entrega: R$ ' + ped.taxaEntrega.toFixed(2) + '\n';
     relatorio += 'Itens: \n';
     ped.itens.forEach(item => {
       relatorio += '  - ' + item.nome + '  R$ ' + item.preco.toFixed(2) + '\n';
