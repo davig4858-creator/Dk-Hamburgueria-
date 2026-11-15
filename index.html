@@ -160,7 +160,6 @@ input {
   <button class="botaoAba" onclick="mudarAba(1)">🍔 Cadastrar Lanches</button>
 </div>
 
-<!-- ABA 0 — LANÇAR PEDIDOS -->
 <div class="conteudoAba visivel" id="aba0">
   <h2>Novo Pedido</h2>
   <input type="text" id="nomeCliente" placeholder="Nome do cliente">
@@ -184,7 +183,6 @@ input {
   <div id="historicoPedidos"></div>
 </div>
 
-<!-- ABA 1 — CADASTRAR LANCHES -->
 <div class="conteudoAba" id="aba1">
   <h2>Cadastrar Lanches do Cardápio</h2>
   <input type="text" id="nomeLancheNovo" placeholder="Ex: Dk JR">
@@ -197,9 +195,35 @@ input {
 
 <script>
 let abaAtual = 0;
-let lanches = JSON.parse(localStorage.getItem('lanches')) || [];
+let lanches = [];
 let itensPedidoAtual = [];
-let historicoPedidos = JSON.parse(localStorage.getItem('historicoPedidos')) || [];
+let historicoPedidos = [];
+
+function salvarLocal(chave, valor) {
+  try {
+    localStorage.setItem(chave, JSON.stringify(valor));
+    return true;
+  } catch (e) {
+    console.error('Erro ao salvar:', e);
+    return false;
+  }
+}
+
+function carregarLocal(chave) {
+  try {
+    const dados = localStorage.getItem(chave);
+    return dados ? JSON.parse(dados) : [];
+  } catch (e) {
+    console.error('Erro ao carregar:', e);
+    return [];
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  lanches = carregarLocal('lanches');
+  historicoPedidos = carregarLocal('historicoPedidos');
+  mudarAba(0);
+});
 
 function mudarAba(numero) {
   abaAtual = numero;
@@ -282,7 +306,7 @@ function finalizarPedido() {
   };
 
   historicoPedidos.push(pedido);
-  localStorage.setItem('historicoPedidos', JSON.stringify(historicoPedidos));
+  salvarLocal('historicoPedidos', historicoPedidos);
 
   carregarHistorico();
   calcularTotalDoDia();
@@ -302,7 +326,7 @@ function calcularTotalDoDia() {
     total += ped.total;
   });
   document.getElementById('somaDia').textContent = total.toFixed(2);
-  localStorage.setItem('vendasDia', total);
+  salvarLocal('vendasDia', total);
 }
 
 function carregarHistorico() {
@@ -360,7 +384,7 @@ function cadastrarLanche() {
   }
 
   lanches.push({nome: nome, preco: preco});
-  localStorage.setItem('lanches', JSON.stringify(lanches));
+  salvarLocal('lanches', lanches);
 
   nomeInput.value = '';
   precoInput.value = '';
@@ -385,15 +409,10 @@ function carregarListaCadastrados() {
 
 function excluirLanche(i) {
   lanches.splice(i, 1);
-  localStorage.setItem('lanches', JSON.stringify(lanches));
+  salvarLocal('lanches', lanches);
   carregarLanchesPedido();
   carregarListaCadastrados();
 }
-
-carregarLanchesPedido();
-carregarListaCadastrados();
-carregarHistorico();
-calcularTotalDoDia();
 </script>
 </body>
 </html>
