@@ -177,7 +177,7 @@ input {
 
   <button class="botao botaoVerde" onclick="finalizarPedido()">✅ Finalizar Pedido</button>
   <button class="botao botaoDourado" onclick="imprimirPedido()">🖨️ Imprimir Pedido</button>
-  <button class="botao botaoDourado" onclick="salvarVendasDia()">💾 Salvar vendas do dia</button>
+  <button class="botao botaoDourado" onclick="salvarEDownloadDia()">💾 Salvar e baixar vendas do dia</button>
   <button class="botao botaoVermelho" onclick="limparHistoricoDia()">🗑️ Limpar histórico para o próximo dia</button>
 
   <h3>📜 Histórico de pedidos do dia:</h3>
@@ -218,6 +218,19 @@ function carregarLocal(chave) {
     console.error('Erro ao carregar:', e);
     return [];
   }
+}
+
+// ✅ FUNÇÃO PARA BAIXAR ARQUIVO NO CELULAR
+function baixarArquivo(nomeArquivo, conteudo) {
+  const blob = new Blob([JSON.stringify(conteudo, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nomeArquivo;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -318,7 +331,7 @@ function finalizarPedido() {
   atualizarItensPedido();
   carregarLanchesPedido();
 
-  alert('✅ Pedido finalizado e salvo no histórico!');
+  alert('✅ Pedido finalizado!');
 }
 
 function calcularTotalDoDia() {
@@ -367,14 +380,16 @@ function imprimirPedido() {
   window.open('data:text/plain;charset=utf-8,' + encodeURIComponent(texto));
 }
 
-function salvarVendasDia() {
+// ✅ SALVA E FAZ DOWNLOAD DAS VENDAS DO DIA
+function salvarEDownloadDia() {
   calcularTotalDoDia();
-  alert('💾 Vendas do dia salvas!');
+  const dataArquivo = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
+  baixarArquivo('vendas_dk_hamburgueria_' + dataArquivo + '.json', historicoPedidos);
+  alert('💾 Vendas do dia salvas e baixadas no celular! Agora você pode limpar o histórico!');
 }
 
-// ✅ FUNÇÃO LIMPAR HISTÓRICO PARA O PRÓXIMO DIA
 function limparHistoricoDia() {
-  if (!confirm('⚠️ Tem certeza que quer apagar todo o histórico do dia?')) {
+  if (!confirm('⚠️ Tem certeza que quer apagar todo o histórico do dia? Primeiro faça o download!')) {
     return;
   }
   historicoPedidos = [];
@@ -403,7 +418,7 @@ function cadastrarLanche() {
 
   carregarLanchesPedido();
   carregarListaCadastrados();
-  alert('✅ Lanche cadastrado com sucesso!');
+  alert('✅ Lanche cadastrado!');
 }
 
 function carregarListaCadastrados() {
