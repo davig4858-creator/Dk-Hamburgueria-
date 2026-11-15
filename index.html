@@ -220,7 +220,6 @@ function carregarLocal(chave) {
   }
 }
 
-// ✅ BAIXAR ARQUIVO TEXTO
 function baixarArquivoTexto(nomeArquivo, conteudoTexto) {
   const blob = new Blob([conteudoTexto], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
@@ -369,49 +368,52 @@ function imprimirPedido() {
   const nomeCli = document.getElementById('nomeCliente').value;
   const endCli = document.getElementById('enderecoCliente').value;
   let totalPedido = 0;
-  let texto = '==============================\\n';
-  texto += '        DK HAMBURGUERIA        \\n';
-  texto += '==============================\\n';
-  texto += 'Cliente: ' + nomeCli + '\\n';
-  texto += 'Endereço: ' + endCli + '\\n';
-  texto += '------------------------------\\n';
+  let texto = '==============================\n';
+  texto += '        DK HAMBURGUERIA        \n';
+  texto += '==============================\n';
+  texto += 'Cliente: ' + nomeCli + '\n';
+  texto += 'Endereço: ' + endCli + '\n';
+  texto += '------------------------------\n';
   itensPedidoAtual.forEach(i => {
-    texto += i.nome + ' .......... R$ ' + i.preco.toFixed(2) + '\\n';
+    texto += i.nome + ' .......... R$ ' + i.preco.toFixed(2) + '\n';
     totalPedido += i.preco;
   });
-  texto += '------------------------------\\n';
-  texto += 'TOTAL ................ R$ ' + totalPedido.toFixed(2) + '\\n';
-  texto += '==============================\\n';
+  texto += '------------------------------\n';
+  texto += 'TOTAL ................ R$ ' + totalPedido.toFixed(2) + '\n';
+  texto += '==============================\n';
   window.open('data:text/plain;charset=utf-8,' + encodeURIComponent(texto));
 }
 
-// ✅ SALVAR E BAIXAR RELATÓRIO NO ESTILO DA FOTO
+// ✅ RELATÓRIO SIMPLES E FÁCIL DE LER
 function salvarEDownloadDia() {
   calcularTotalDoDia();
   const dataArquivo = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
-  let relatorio = '========================================\\n';
-  relatorio += '            RELATÓRIO GERAL             \\n';
-  relatorio += '========================================\\n';
-  relatorio += 'Gerado em: ' + new Date().toLocaleString('pt-BR') + '\\n';
-  relatorio += 'Total de vendas: ' + historicoPedidos.length + '\\n';
-  relatorio += '========================================\\n';
+  let relatorio = '';
+  relatorio += 'DK HAMBURGUERIA - RELATÓRIO DE VENDAS\n';
+  relatorio += 'Gerado em: ' + new Date().toLocaleString('pt-BR') + '\n';
+  relatorio += 'Quantidade de pedidos: ' + historicoPedidos.length + '\n';
+  relatorio += '----------------------------------------\n';
 
   for(let indice = 0; indice < historicoPedidos.length; indice++){
     const ped = historicoPedidos[indice];
-    relatorio += (indice + 1) + '. ' + ped.dataHora + ' | ' + ped.nomeCliente + '\\n';
+    relatorio += 'PEDIDO ' + (indice + 1) + '\n';
+    relatorio += 'Data/Hora: ' + ped.dataHora + '\n';
+    relatorio += 'Cliente: ' + ped.nomeCliente + '\n';
+    relatorio += 'Endereço: ' + ped.endereco + '\n';
+    relatorio += 'Itens: \n';
     ped.itens.forEach(item => {
-      relatorio += '  ' + item.nome + ' x1 = R$ ' + item.preco.toFixed(2) + '\\n';
+      relatorio += '  - ' + item.nome + '  R$ ' + item.preco.toFixed(2) + '\n';
     });
-    relatorio += '  TOTAL: R$ ' + ped.total.toFixed(2) + '\\n';
-    relatorio += '----------------------------------------\\n';
+    relatorio += 'TOTAL DO PEDIDO: R$ ' + ped.total.toFixed(2) + '\n';
+    relatorio += '----------------------------------------\n';
   }
 
   let totalGeral = 0;
   historicoPedidos.forEach(p => totalGeral += p.total);
-  relatorio += 'TOTAL GERAL: R$ ' + totalGeral.toFixed(2) + '\\n';
+  relatorio += 'TOTAL GERAL DO DIA: R$ ' + totalGeral.toFixed(2) + '\n';
 
   baixarArquivoTexto('todas_vendas_' + dataArquivo + '.txt', relatorio);
-  alert('💾 Relatório baixado no celular! Agora você pode limpar o histórico!');
+  alert('💾 Relatório simples baixado! Agora você pode limpar o histórico!');
 }
 
 function limparHistoricoDia() {
