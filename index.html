@@ -178,6 +178,7 @@ input {
   <button class="botao botaoVerde" onclick="finalizarPedido()">✅ Finalizar Pedido</button>
   <button class="botao botaoDourado" onclick="imprimirPedido()">🖨️ Imprimir Pedido</button>
   <button class="botao botaoDourado" onclick="salvarVendasDia()">💾 Salvar vendas do dia</button>
+  <button class="botao botaoVermelho" onclick="limparHistoricoDia()">🗑️ Limpar histórico para o próximo dia</button>
 
   <h3>📜 Histórico de pedidos do dia:</h3>
   <div id="historicoPedidos"></div>
@@ -371,7 +372,18 @@ function salvarVendasDia() {
   alert('💾 Vendas do dia salvas!');
 }
 
-// ✅ FUNÇÃO CADASTRAR LANCHE CORRIGIDA
+// ✅ FUNÇÃO LIMPAR HISTÓRICO PARA O PRÓXIMO DIA
+function limparHistoricoDia() {
+  if (!confirm('⚠️ Tem certeza que quer apagar todo o histórico do dia?')) {
+    return;
+  }
+  historicoPedidos = [];
+  salvarLocal('historicoPedidos', historicoPedidos);
+  carregarHistorico();
+  calcularTotalDoDia();
+  alert('🗑️ Histórico limpo! Pronto para o próximo dia!');
+}
+
 function cadastrarLanche() {
   const nomeInput = document.getElementById('nomeLancheNovo');
   const precoInput = document.getElementById('precoLancheNovo');
