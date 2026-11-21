@@ -111,6 +111,19 @@ input {
   border: none;
   font-size: 22px;
   cursor: pointer;
+  margin: 0 2px;
+}
+.botaoMenos {
+  background: #e63946;
+  color: #fff;
+  font-weight: bold;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  margin: 0 2px;
 }
 .item {
   background: #200d3f;
@@ -121,14 +134,18 @@ input {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 .quantidadeItem {
   background: #110622;
   border: 1px solid #D4AF37;
   padding: 6px 12px;
   border-radius: 8px;
-  margin-right: 8px;
+  margin: 0 6px;
   font-weight: bold;
+  min-width: 36px;
+  text-align: center;
 }
 .totalDia {
   background: #1f0b3b;
@@ -147,6 +164,10 @@ input {
   border-radius: 10px;
   padding: 12px;
   margin: 10px 0;
+}
+.botoesQuantidade {
+  display: flex;
+  align-items: center;
 }
 </style>
 </head>
@@ -173,7 +194,7 @@ input {
   <div id="itensDoPedido"></div>
 
   <div class="totalDia">
-    💰 Total vendido no dia: R$ <span id="somaDia">0,00</span>
+    💰 Total vendido no dia: R$ <span id="somaDia">0.00</span>
   </div>
 
   <button class="botao botaoVerde" onclick="finalizarPedido()">✅ Finalizar Pedido</button>
@@ -261,7 +282,8 @@ function carregarLanchesPedido() {
     div.innerHTML += `
       <div class="item">
         <span>${l.nome} — R$ ${Number(l.preco).toFixed(2)}</span>
-        <div style="display:flex;align-items:center;">
+        <div class="botoesQuantidade">
+          <button class="botaoMenos" onclick="removerUmDoPedido('${l.nome}')">−</button>
           <span class="quantidadeItem">${qtd}</span>
           <button class="botaoMais" onclick="adicionarAoPedido('${l.nome}', ${l.preco})">+</button>
         </div>
@@ -278,6 +300,15 @@ function adicionarAoPedido(nome, preco) {
   itensPedidoAtual.push({nome, preco});
   atualizarItensPedido();
   carregarLanchesPedido();
+}
+
+function removerUmDoPedido(nome) {
+  const indice = itensPedidoAtual.findIndex(i => i.nome === nome);
+  if (indice !== -1) {
+    itensPedidoAtual.splice(indice, 1);
+    atualizarItensPedido();
+    carregarLanchesPedido();
+  }
 }
 
 function atualizarItensPedido() {
@@ -350,7 +381,7 @@ function calcularTotalDoDia() {
 function carregarHistorico() {
   const div = document.getElementById('historicoPedidos');
   div.innerHTML = '';
-  historicoPedidos.forEach(ped => {
+  historicoPedidos.forEach((ped, indice) => {
     let itensTexto = '';
     ped.itens.forEach(i => {
       itensTexto += i.nome + ' R$ ' + i.preco.toFixed(2) + '<br>';
@@ -363,13 +394,23 @@ function carregarHistorico() {
         Endereço: ${ped.endereco}<br>
         Taxa de Entrega: R$ ${ped.taxaEntrega.toFixed(2)}<br>
         ${itensTexto}
-        <strong>TOTAL: R$ ${ped.total.toFixed(2)}</strong>
+        <strong>TOTAL: R$ ${ped.total.toFixed(2)}</strong><br>
+        <button class="botao botaoVermelho" style="margin-top:8px;" onclick="excluirPedidoDoDia(${indice})">🗑️ Excluir este pedido</button>
       </div>
     `;
   });
 }
 
-// ✅ IMPRESSÃO SIMPLES E FÁCIL DE LER PARA RAWBT
+function excluirPedidoDoDia(indice) {
+  if (!confirm('⚠️ Tem certeza que deseja excluir este pedido?')) {
+    return;
+  }
+  historicoPedidos.splice(indice, 1);
+  salvarLocal('historicoPedidos', historicoPedidos);
+  carregarHistorico();
+  calcularTotalDoDia();
+}
+
 function imprimirPedido() {
   const nomeCli = document.getElementById('nomeCliente').value;
   const endCli = document.getElementById('enderecoCliente').value;
@@ -407,7 +448,6 @@ function imprimirPedido() {
   window.location.href = linkRawbt;
 }
 
-// ✅ RELATÓRIO SIMPLES E FÁCIL DE LER
 function salvarEDownloadDia() {
   calcularTotalDoDia();
   const dataArquivo = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
@@ -437,11 +477,11 @@ function salvarEDownloadDia() {
   relatorio += 'TOTAL GERAL DO DIA: R$ ' + totalGeral.toFixed(2) + '\n';
 
   baixarArquivoTexto('todas_vendas_' + dataArquivo + '.txt', relatorio);
-  alert('💾 Relatório simples baixado! Agora você pode limpar o histórico!');
+  alert('💾 Relatório baixado com sucesso!');
 }
 
 function limparHistoricoDia() {
-  if (!confirm('⚠️ Tem certeza? Primeiro faça o download do relatório!')) {
+  if (!confirm('⚠️ Primeiro faça o download do relatório! Tem certeza que deseja limpar tudo?')) {
     return;
   }
   historicoPedidos = [];
