@@ -207,36 +207,36 @@ function imprimirPedido(){
   });
 
   let st = 0;
-  let partes = [];
-  partes.push('==========================');
-  partes.push('    DK HAMBURGUERIA');
-  partes.push('==========================');
-  partes.push('DATA: ' + new Date().toLocaleString('pt-BR'));
-  partes.push('CLIENTE: ' + nc);
-  if(ec) partes.push('ENDEREÇO: ' + ec);
-  partes.push('--------------------------');
-  partes.push('ITENS:');
+  let linhas = [];
+  linhas.push('==========================');
+  linhas.push('    DK HAMBURGUERIA');
+  linhas.push('==========================');
+  linhas.push('DATA: ' + new Date().toLocaleString('pt-BR'));
+  linhas.push('CLIENTE: ' + nc);
+  if(ec) linhas.push('ENDERECO: ' + ec);
+  linhas.push('--------------------------');
+  linhas.push('ITENS:');
   
   for(const n in agrupado){
     const x = agrupado[n];
     const v = x.qtd * x.preco;
     st += v;
-    partes.push(x.qtd + 'x ' + n);
-    partes.push('       R$ ' + v.toFixed(2));
+    linhas.push(x.qtd + 'x ' + n);
+    linhas.push('       R$ ' + v.toFixed(2));
   }
   
-  partes.push('--------------------------');
-  partes.push('SUBTOTAL....: R$ ' + st.toFixed(2));
-  if(tx > 0) partes.push('ENTREGA.....: R$ ' + tx.toFixed(2));
-  partes.push('--------------------------');
-  partes.push('TOTAL.......: R$ ' + (st + tx).toFixed(2));
-  partes.push('==========================');
-  partes.push('Obrigado! Volte sempre!');
-  partes.push('');
-  partes.push('');
-  partes.push('');
+  linhas.push('--------------------------');
+  linhas.push('SUBTOTAL....: R$ ' + st.toFixed(2));
+  if(tx > 0) linhas.push('ENTREGA.....: R$ ' + tx.toFixed(2));
+  linhas.push('--------------------------');
+  linhas.push('TOTAL.......: R$ ' + (st + tx).toFixed(2));
+  linhas.push('==========================');
+  linhas.push('Obrigado! Volte sempre!');
+  linhas.push('');
+  linhas.push('');
+  linhas.push('');
 
-  const textoFinal = partes.join('\n');
+  const textoFinal = linhas.join('\n');
   window.location.href = 'rawbt://print?text=' + encodeURIComponent(textoFinal);
 }
 
@@ -246,14 +246,14 @@ function salvarEDownloadDia(){
   const d=new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
   let r='==============================\n';
   r+='   DK HAMBURGUERIA\n';
-  r+='RELATÓRIO DE VENDAS — '+new Date().toLocaleDateString('pt-BR')+'\n';
+  r+='RELATORIO DE VENDAS — '+new Date().toLocaleDateString('pt-BR')+'\n';
   r+='==============================\n\n';
   let tg=0;
   historicoPedidos.forEach((p,i)=>{
     tg+=p.total;
     r+='PEDIDO '+(i+1)+' — '+p.dataHora+'\n';
     r+='Cliente: '+p.nomeCliente+'\n';
-    if(p.endereco)r+='Endereço: '+p.endereco+'\n';
+    if(p.endereco)r+='Endereco: '+p.endereco+'\n';
     r+='Itens:\n';
     p.itens.forEach(x=>r+='  - '+x.nome+'  R$ '+x.preco.toFixed(2)+'\n');
     if(p.taxaEntrega>0)r+='  Entrega: R$ '+p.taxaEntrega.toFixed(2)+'\n';
@@ -269,14 +269,37 @@ function salvarEDownloadDia(){
 }
 
 function limparHistoricoDia(){
-  if(historicoPedidos.length===0){alert('Já está vazio!');return}
-  if(!confirm('⚠️ Primeiro faça o download do relatório!\nTem certeza que deseja apagar TODOS os pedidos?'))return;
+  if(historicoPedidos.length===0){alert('Ja esta vazio!');return}
+  if(!confirm('⚠️ Primeiro faca o download do relatorio!\nTem certeza que deseja apagar TODOS os pedidos?'))return;
   historicoPedidos=[];
   salvarLocal('historicoPedidos',historicoPedidos);
   carregarHistorico();
   calcularTotalDoDia();
-  alert('🗑️ Histórico limpo! Pronto para o próximo dia!');
+  alert('🗑️ Historico limpo! Pronto para o proximo dia!');
 }
 
 function cadastrarLanche(){
-  const n=document.getElementById('nomeL
+  const n=document.getElementById('nomeLancheNovo').value.trim();
+  const v=Number(document.getElementById('precoLancheNovo').value);
+  if(!n||!v||v<=0){alert('⚠️ Digite nome e preco valido!');return}
+  lanches.push({nome:n,preco:v});
+  salvarLocal('lanches',lanches);
+  document.getElementById('nomeLancheNovo').value='';
+  document.getElementById('precoLancheNovo').value='';
+  carregarLanchesPedido();
+  carregarListaCadastrados();
+  alert('✅ Lanche cadastrado!');
+}
+
+function carregarListaCadastrados(){
+  const d=document.getElementById('listaLanchesCadastrados');
+  d.innerHTML='';
+  lanches.forEach((l,i)=>{
+    d.innerHTML+=`<div class="item"><span>${l.nome} — R$ ${Number(l.preco).toFixed(2)}</span><button class="botao botaoVermelho" style="width:auto;padding:6px 10px;" onclick="excluirLanche(${i})">Excluir</button></div>`;
+  });
+}
+
+function excluirLanche(i){lanches.splice(i,1);salvarLocal('lanches',lanches);carregarLanchesPedido();carregarListaCadastrados()}
+</script>
+</body>
+</html>
