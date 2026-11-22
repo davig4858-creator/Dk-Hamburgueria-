@@ -196,67 +196,81 @@ function carregarHistorico(){
 function excluirPedido(i){if(!confirm('Excluir este pedido?'))return;historicoPedidos.splice(i,1);salvarLocal('historicoPedidos',historicoPedidos);carregarHistorico();calcularTotalDoDia()}
 
 function imprimirPedido(){
-  const nc=document.getElementById('nomeCliente').value||'Cliente';
-  const ec=document.getElementById('enderecoCliente').value||'';
-  const tx=Number(document.getElementById('taxaEntrega').value)||0;
-  const agrupado={};
-  itensPedidoAtual.forEach(i=>{if(!agrupado[i.nome])agrupado[i.nome]={qtd:0,preco:i.preco};agrupado[i.nome].qtd++});
-  let st=0,txt='';
-  txt+='==========================\\n';
-  txt+='    DK HAMBURGUERIA\\n';
-  txt+='==========================\\n';
-  txt+='DATA: '+new Date().toLocaleString('pt-BR')+'\\n';
-  txt+='CLIENTE: '+nc+'\\n';
-  if(ec)txt+='ENDEREÇO: '+ec+'\\n';
-  txt+='--------------------------\\n';
-  txt+='ITENS:\\n';
+  const nc = document.getElementById('nomeCliente').value || 'Cliente';
+  const ec = document.getElementById('enderecoCliente').value || '';
+  const tx = Number(document.getElementById('taxaEntrega').value) || 0;
+
+  const agrupado = {};
+  itensPedidoAtual.forEach(i => {
+    if(!agrupado[i.nome]) agrupado[i.nome] = { qtd: 0, preco: i.preco };
+    agrupado[i.nome].qtd++;
+  });
+
+  let st = 0;
+  let partes = [];
+  partes.push('==========================');
+  partes.push('    DK HAMBURGUERIA');
+  partes.push('==========================');
+  partes.push('DATA: ' + new Date().toLocaleString('pt-BR'));
+  partes.push('CLIENTE: ' + nc);
+  if(ec) partes.push('ENDEREÇO: ' + ec);
+  partes.push('--------------------------');
+  partes.push('ITENS:');
+  
   for(const n in agrupado){
-    const x=agrupado[n],v=x.qtd*x.preco;st+=v;
-    txt+=x.qtd+'x '+n+'\\n';
-    txt+='      R$ '+v.toFixed(2)+'\\n';
+    const x = agrupado[n];
+    const v = x.qtd * x.preco;
+    st += v;
+    partes.push(x.qtd + 'x ' + n);
+    partes.push('       R$ ' + v.toFixed(2));
   }
-  txt+='--------------------------\\n';
-  txt+='SUBTOTAL....: R$ '+st.toFixed(2)+'\\n';
-  if(tx>0)txt+='ENTREGA.....: R$ '+tx.toFixed(2)+'\\n';
-  txt+='--------------------------\\n';
-  txt+='TOTAL.......: R$ '+(st+tx).toFixed(2)+'\\n';
-  txt+='==========================\\n';
-  txt+='Obrigado! Volte sempre!\\n';
-  txt+='\\n\\n\\n';
-  window.location.href='rawbt://print?text='+encodeURIComponent(txt);
+  
+  partes.push('--------------------------');
+  partes.push('SUBTOTAL....: R$ ' + st.toFixed(2));
+  if(tx > 0) partes.push('ENTREGA.....: R$ ' + tx.toFixed(2));
+  partes.push('--------------------------');
+  partes.push('TOTAL.......: R$ ' + (st + tx).toFixed(2));
+  partes.push('==========================');
+  partes.push('Obrigado! Volte sempre!');
+  partes.push('');
+  partes.push('');
+  partes.push('');
+
+  const textoFinal = partes.join('\n');
+  window.location.href = 'rawbt://print?text=' + encodeURIComponent(textoFinal);
 }
 
 function salvarEDownloadDia(){
   if(historicoPedidos.length===0){alert('⚠️ Nenhum pedido salvo ainda!');return}
   calcularTotalDoDia();
   const d=new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
-  let r='==============================\\n';
-  r+='   DK HAMBURGUERIA\\n';
-  r+='RELATÓRIO DE VENDAS — '+new Date().toLocaleDateString('pt-BR')+'\\n';
-  r+='==============================\\n\\n';
+  let r='==============================\n';
+  r+='   DK HAMBURGUERIA\n';
+  r+='RELATÓRIO DE VENDAS — '+new Date().toLocaleDateString('pt-BR')+'\n';
+  r+='==============================\n\n';
   let tg=0;
   historicoPedidos.forEach((p,i)=>{
     tg+=p.total;
-    r+='PEDIDO '+(i+1)+' — '+p.dataHora+'\\n';
-    r+='Cliente: '+p.nomeCliente+'\\n';
-    if(p.endereco)r+='Endereço: '+p.endereco+'\\n';
-    r+='Itens:\\n';
-    p.itens.forEach(x=>r+='  - '+x.nome+'  R$ '+x.preco.toFixed(2)+'\\n');
-    if(p.taxaEntrega>0)r+='  Entrega: R$ '+p.taxaEntrega.toFixed(2)+'\\n';
-    r+='TOTAL: R$ '+p.total.toFixed(2)+'\\n';
-    r+='------------------------------\\n\\n';
+    r+='PEDIDO '+(i+1)+' — '+p.dataHora+'\n';
+    r+='Cliente: '+p.nomeCliente+'\n';
+    if(p.endereco)r+='Endereço: '+p.endereco+'\n';
+    r+='Itens:\n';
+    p.itens.forEach(x=>r+='  - '+x.nome+'  R$ '+x.preco.toFixed(2)+'\n');
+    if(p.taxaEntrega>0)r+='  Entrega: R$ '+p.taxaEntrega.toFixed(2)+'\n';
+    r+='TOTAL: R$ '+p.total.toFixed(2)+'\n';
+    r+='------------------------------\n\n';
   });
-  r+='\\n==============================\\n';
-  r+='TOTAL GERAL DO DIA: R$ '+tg.toFixed(2)+'\\n';
-  r+='Quantidade de pedidos: '+historicoPedidos.length+'\\n';
-  r+='==============================\\n';
+  r+='\n==============================\n';
+  r+='TOTAL GERAL DO DIA: R$ '+tg.toFixed(2)+'\n';
+  r+='Quantidade de pedidos: '+historicoPedidos.length+'\n';
+  r+='==============================\n';
   baixarArquivoTexto('vendas_'+d+'.txt',r);
   alert('💾 Relatório baixado com sucesso!');
 }
 
 function limparHistoricoDia(){
   if(historicoPedidos.length===0){alert('Já está vazio!');return}
-  if(!confirm('⚠️ Primeiro faça o download do relatório!\\nTem certeza que deseja apagar TODOS os pedidos?'))return;
+  if(!confirm('⚠️ Primeiro faça o download do relatório!\nTem certeza que deseja apagar TODOS os pedidos?'))return;
   historicoPedidos=[];
   salvarLocal('historicoPedidos',historicoPedidos);
   carregarHistorico();
@@ -265,27 +279,4 @@ function limparHistoricoDia(){
 }
 
 function cadastrarLanche(){
-  const n=document.getElementById('nomeLancheNovo').value.trim();
-  const v=Number(document.getElementById('precoLancheNovo').value);
-  if(!n||!v||v<=0){alert('⚠️ Digite nome e preço válido!');return}
-  lanches.push({nome:n,preco:v});
-  salvarLocal('lanches',lanches);
-  document.getElementById('nomeLancheNovo').value='';
-  document.getElementById('precoLancheNovo').value='';
-  carregarLanchesPedido();
-  carregarListaCadastrados();
-  alert('✅ Lanche cadastrado!');
-}
-
-function carregarListaCadastrados(){
-  const d=document.getElementById('listaLanchesCadastrados');
-  d.innerHTML='';
-  lanches.forEach((l,i)=>{
-    d.innerHTML+=`<div class="item"><span>${l.nome} — R$ ${Number(l.preco).toFixed(2)}</span><button class="botao botaoVermelho" style="width:auto;padding:6px 10px;" onclick="excluirLanche(${i})">Excluir</button></div>`;
-  });
-}
-
-function excluirLanche(i){lanches.splice(i,1);salvarLocal('lanches',lanches);carregarLanchesPedido();carregarListaCadastrados()}
-</script>
-</body>
-</html>
+  const n=document.getElementById('nomeL
