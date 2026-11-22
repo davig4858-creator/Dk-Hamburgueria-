@@ -21,32 +21,34 @@ input {width:100%;padding:11px;border-radius:8px;border:1px solid #7b2cbf;backgr
 .botaoDourado {background:#D4AF37;color:#000;box-shadow:0 0 8px #D4AF37;}
 .botaoVerde {background:#2cc95b;color:#000;}
 .botaoVermelho {background:#e63946;color:#fff;}
-.botaoMais {background:#2cc95b;color:#000;font-weight:bold;width:45px;height:45px;border-radius:50%;border:none;font-size:22px;cursor:pointer;margin:0 2px;}
-.botaoMenos {background:#e63946;color:#fff;font-weight:bold;width:45px;height:45px;border-radius:50%;border:none;font-size:22px;cursor:pointer;margin:0 2px;}
-.item {background:#200d3f;border:1px solid #D4AF37;border-radius:10px;padding:12px;margin:9px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
-.quantidadeItem {background:#110622;border:1px solid #D4AF37;padding:6px 12px;border-radius:8px;margin:0 6px;font-weight:bold;min-width:36px;text-align:center;}
-.totalDia {background:#1f0b3b;border:2px solid #D4AF37;border-radius:10px;padding:14px;margin:12px 0;text-align:center;font-size:22px;font-weight:bold;color:#D4AF37;}
+.botaoMais {background:#2cc95b;color:#000;font-weight:bold;width:40px;height:40px;border-radius:50%;border:none;font-size:20px;cursor:pointer;}
+.botaoMenos {background:#e63946;color:#fff;font-weight:bold;width:40px;height:40px;border-radius:50%;border:none;font-size:20px;cursor:pointer;}
+.item {background:#200d3f;border:1px solid #D4AF37;border-radius:10px;padding:12px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.quantidadeItem {background:#110622;border:1px solid #D4AF37;padding:6px 10px;border-radius:6px;font-weight:bold;min-width:30px;text-align:center;}
+.totalDia {background:#1f0b3b;border:2px solid #D4AF37;border-radius:10px;padding:14px;margin:12px 0;text-align:center;font-size:20px;font-weight:bold;color:#D4AF37;}
 .historicoPedido {background:#0f0520;border:1px solid #D4AF37;border-radius:10px;padding:12px;margin:10px 0;}
-.botoesQuantidade {display:flex;align-items:center;}
+.botoesQuantidade {display:flex;align-items:center;gap:6px;}
 .aviso {background:#2a1055;border:1px solid #7b2cbf;border-radius:8px;padding:10px;margin:10px 0;font-size:14px;color:#e0c9ff;}
 </style>
 </head>
 <body>
 <div class="topo"><h1>DK HAMBURGUERIA</h1></div>
+
 <div class="abas">
 <button class="botaoAba ativa" onclick="mudarAba(0)">📋 Lançar Pedidos</button>
 <button class="botaoAba" onclick="mudarAba(1)">🍔 Cadastrar Lanches</button>
 </div>
+
 <div class="conteudoAba visivel" id="aba0">
 <h2>Novo Pedido</h2>
 <input type="text" id="nomeCliente" placeholder="Nome do cliente">
 <input type="text" id="enderecoCliente" placeholder="Endereço">
 <input type="number" id="taxaEntrega" step="0.01" placeholder="Taxa de Entrega R$">
 
-<div class="aviso">🎁 Combo — digite nome e valor e adicione ao pedido:</div>
+<div class="aviso">🎁 Combo — digite nome e valor:</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;">
-<input type="text" id="nomeCombo" placeholder="Nome do Combo" style="flex:1;min-width:180px;margin:0;">
-<input type="number" id="valorCombo" step="0.01" placeholder="R$" style="width:120px;margin:0;">
+<input type="text" id="nomeCombo" placeholder="Nome do Combo" style="flex:1;min-width:150px;margin:0;">
+<input type="number" id="valorCombo" step="0.01" placeholder="R$" style="width:100px;margin:0;">
 </div>
 <button class="botao botaoVerde" style="margin-top:8px;" onclick="adicionarComboAoPedido()">➕ Adicionar Combo</button>
 
@@ -58,41 +60,78 @@ input {width:100%;padding:11px;border-radius:8px;border:1px solid #7b2cbf;backgr
 
 <div class="totalDia">💰 Total vendido no dia: R$ <span id="somaDia">0.00</span></div>
 
-<button class="botao botaoVerde" onclick="finalizarPedido()">✅ Finalizar Pedido</button>
-<button class="botao botaoDourado" onclick="imprimirPedido()">🖨️ Imprimir Pedido</button>
-<button class="botao botaoDourado" onclick="salvarEDownloadDia()">💾 Salvar e baixar vendas</button>
-<button class="botao botaoVermelho" onclick="limparHistoricoDia()">🗑️ Limpar histórico</button>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<button class="botao botaoVerde" style="flex:1;min-width:140px;" onclick="finalizarPedido()">✅ Finalizar Pedido</button>
+<button class="botao botaoDourado" style="flex:1;min-width:140px;" onclick="imprimirPedido()">🖨️ Imprimir</button>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<button class="botao botaoDourado" style="flex:1;min-width:140px;" onclick="salvarEDownloadDia()">💾 Salvar/Vendas</button>
+<button class="botao botaoVermelho" style="flex:1;min-width:140px;" onclick="limparHistoricoDia()">🗑️ Limpar Dia</button>
+</div>
 
 <h3>📜 Histórico de pedidos do dia:</h3>
 <div id="historicoPedidos"></div>
 </div>
 
 <div class="conteudoAba" id="aba1">
-<h2>Cadastrar Lanches do Cardápio</h2>
-<input type="text" id="nomeLancheNovo" placeholder="Ex: Dk JR">
-<input type="number" id="precoLancheNovo" step="0.01" placeholder="Ex: 17.99">
+<h2>Cadastrar Lanches</h2>
+<input type="text" id="nomeLancheNovo" placeholder="Nome do lanche">
+<input type="number" id="precoLancheNovo" step="0.01" placeholder="Preço R$">
 <button class="botao botaoDourado" onclick="cadastrarLanche()">➕ Cadastrar Lanche</button>
+
 <h3>📋 Lanches cadastrados:</h3>
 <div id="listaLanchesCadastrados"></div>
 </div>
 
 <script>
-let abaAtual=0,lanches=[],itensPedidoAtual=[],historicoPedidos=[];
+let abaAtual=0;
+let lanches=[];
+let itensPedidoAtual=[];
+let historicoPedidos=[];
 
-function salvarLocal(c,v){try{localStorage.setItem(c,JSON.stringify(v));return true}catch(e){return false}}
-function carregarLocal(c){try{const d=localStorage.getItem(c);return d?JSON.parse(d):[]}catch(e){return []}}
-function baixarArquivoTexto(n,t){const b=new Blob([t],{type:'text/plain'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=n;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u)}
+function salvarLocal(chave,valor){
+  try{
+    localStorage.setItem(chave,JSON.stringify(valor));
+    return true;
+  }catch(e){
+    console.error('Erro ao salvar:',e);
+    return false;
+  }
+}
+
+function carregarLocal(chave){
+  try{
+    const dados=localStorage.getItem(chave);
+    return dados ? JSON.parse(dados) : [];
+  }catch(e){
+    console.error('Erro ao carregar:',e);
+    return [];
+  }
+}
+
+function baixarArquivoTexto(nome,texto){
+  const blob=new Blob([texto],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=nome;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 document.addEventListener('DOMContentLoaded',function(){
   lanches=carregarLocal('lanches');
   historicoPedidos=carregarLocal('historicoPedidos');
+  console.log('Carregado:',historicoPedidos.length,'pedidos');
   mudarAba(0);
 });
 
 function mudarAba(n){
   abaAtual=n;
-  document.querySelectorAll('.conteudoAba').forEach((e,i)=>e.classList.toggle('visivel',i===n));
-  document.querySelectorAll('.botaoAba').forEach((e,i)=>e.classList.toggle('ativa',i===n));
+  document.querySelectorAll('.conteudoAba').forEach((el,i)=>el.classList.toggle('visivel',i===n));
+  document.querySelectorAll('.botaoAba').forEach((el,i)=>el.classList.toggle('ativa',i===n));
   carregarLanchesPedido();
   carregarListaCadastrados();
   carregarHistorico();
@@ -100,209 +139,265 @@ function mudarAba(n){
 }
 
 function adicionarComboAoPedido(){
-  const n=document.getElementById('nomeCombo').value.trim();
-  const v=Number(document.getElementById('valorCombo').value);
-  if(!n||!v||v<=0){alert('⚠️ Preencha o nome e o valor do combo!');return}
-  itensPedidoAtual.push({nome:'🎁 '+n,preco:v});
+  const nome=document.getElementById('nomeCombo').value.trim();
+  const valor=Number(document.getElementById('valorCombo').value);
+  if(!nome||!valor||valor<=0){
+    alert('⚠️ Digite nome e valor do combo!');
+    return;
+  }
+  itensPedidoAtual.push({nome:'COMBO: '+nome,preco:valor});
   document.getElementById('nomeCombo').value='';
   document.getElementById('valorCombo').value='';
   atualizarItensPedido();
-  alert('✅ Combo adicionado! Agora é só finalizar o pedido!');
+  alert('✅ Combo adicionado!');
 }
 
 function carregarLanchesPedido(){
-  const d=document.getElementById('listaLanchesPedido');
-  d.innerHTML='';
+  const div=document.getElementById('listaLanchesPedido');
+  div.innerHTML='';
   lanches.forEach(l=>{
-    const q=contarItemPedido(l.nome);
-    d.innerHTML+=`<div class="item"><span>${l.nome} — R$ ${Number(l.preco).toFixed(2)}</span><div class="botoesQuantidade"><button class="botaoMenos" onclick="removerUmDoPedido('${l.nome}')">−</button><span class="quantidadeItem">${q}</span><button class="botaoMais" onclick="adicionarAoPedido('${l.nome}',${l.preco})">+</button></div></div>`;
+    const qtd=contarItemPedido(l.nome);
+    div.innerHTML+=`
+      <div class="item">
+        <span>${l.nome} — R$ ${Number(l.preco).toFixed(2)}</span>
+        <div class="botoesQuantidade">
+          <button class="botaoMenos" onclick="removerUmDoPedido('${l.nome}')">−</button>
+          <span class="quantidadeItem">${qtd}</span>
+          <button class="botaoMais" onclick="adicionarAoPedido('${l.nome}',${l.preco})">+</button>
+        </div>
+      </div>
+    `;
   });
 }
 
-function contarItemPedido(n){return itensPedidoAtual.filter(i=>i.nome===n).length}
-function adicionarAoPedido(n,v){itensPedidoAtual.push({nome:n,preco:v});atualizarItensPedido();carregarLanchesPedido()}
-function removerUmDoPedido(n){const i=itensPedidoAtual.findIndex(x=>x.nome===n);if(i!==-1){itensPedidoAtual.splice(i,1);atualizarItensPedido();carregarLanchesPedido()}}
+function contarItemPedido(nome){
+  return itensPedidoAtual.filter(i=>i.nome===nome).length;
+}
+
+function adicionarAoPedido(nome,preco){
+  itensPedidoAtual.push({nome:nome,preco:preco});
+  atualizarItensPedido();
+  carregarLanchesPedido();
+}
+
+function removerUmDoPedido(nome){
+  const indice=itensPedidoAtual.findIndex(i=>i.nome===nome);
+  if(indice!==-1){
+    itensPedidoAtual.splice(indice,1);
+    atualizarItensPedido();
+    carregarLanchesPedido();
+  }
+}
 
 function atualizarItensPedido(){
-  const d=document.getElementById('itensDoPedido');
-  d.innerHTML='';
-  itensPedidoAtual.forEach((x,i)=>{
-    d.innerHTML+=`<div class="item"><span>${x.nome} — R$ ${x.preco.toFixed(2)}</span><button class="botao botaoVermelho" style="width:auto;padding:8px 12px;" onclick="removerItem(${i})">Remover</button></div>`;
+  const div=document.getElementById('itensDoPedido');
+  div.innerHTML='';
+  itensPedidoAtual.forEach((item,i)=>{
+    div.innerHTML+=`
+      <div class="item">
+        <span>${item.nome} — R$ ${item.preco.toFixed(2)}</span>
+        <button class="botao botaoVermelho" style="width:auto;padding:6px 10px;" onclick="removerItem(${i})">✕</button>
+      </div>
+    `;
   });
 }
 
-function removerItem(i){itensPedidoAtual.splice(i,1);atualizarItensPedido();carregarLanchesPedido()}
+function removerItem(indice){
+  itensPedidoAtual.splice(indice,1);
+  atualizarItensPedido();
+  carregarLanchesPedido();
+}
 
 function finalizarPedido(){
-  const nc=document.getElementById('nomeCliente').value.trim();
-  const ec=document.getElementById('enderecoCliente').value.trim();
-  const tx=Number(document.getElementById('taxaEntrega').value)||0;
-  if(!nc||itensPedidoAtual.length===0){alert('⚠️ Preencha o nome do cliente e os itens!');return}
-  
-  let t=0;
-  itensPedidoAtual.forEach(i=>t+=i.preco);
-  t+=tx;
+  const nomeCli=document.getElementById('nomeCliente').value.trim();
+  const endCli=document.getElementById('enderecoCliente').value.trim();
+  const taxa=Number(document.getElementById('taxaEntrega').value)||0;
 
-  const p={
+  if(!nomeCli){
+    alert('⚠️ Digite o nome do cliente!');
+    return;
+  }
+  if(itensPedidoAtual.length===0){
+    alert('⚠️ Adicione pelo menos um item!');
+    return;
+  }
+
+  let totalItens=0;
+  itensPedidoAtual.forEach(i=>totalItens+=i.preco);
+  const totalFinal=totalItens+taxa;
+
+  const pedido={
+    id:Date.now(),
     dataHora:new Date().toLocaleString('pt-BR'),
-    nomeCliente:nc,
-    endereco:ec,
-    taxaEntrega:tx,
+    nomeCliente:nomeCli,
+    endereco:endCli,
+    taxaEntrega:taxa,
     itens:[...itensPedidoAtual],
-    total:t
+    total:totalFinal
   };
-  
-  historicoPedidos.push(p);
+
+  historicoPedidos.push(pedido);
   salvarLocal('historicoPedidos',historicoPedidos);
+  
+  console.log('Pedido salvo! Total:',historicoPedidos.length);
+  
   carregarHistorico();
   calcularTotalDoDia();
-  
+
   itensPedidoAtual=[];
   document.getElementById('nomeCliente').value='';
   document.getElementById('enderecoCliente').value='';
   document.getElementById('taxaEntrega').value='';
   atualizarItensPedido();
   carregarLanchesPedido();
-  
-  alert('✅ Pedido finalizado!');
+
+  alert('✅ Pedido salvo! Total: R$ '+totalFinal.toFixed(2));
 }
 
 function calcularTotalDoDia(){
-  let t=0;
-  historicoPedidos.forEach(p=>t+=p.total);
-  document.getElementById('somaDia').textContent=t.toFixed(2);
-  salvarLocal('vendasDia',t);
+  let total=0;
+  historicoPedidos.forEach(p=>total+=p.total);
+  document.getElementById('somaDia').textContent=total.toFixed(2);
+  salvarLocal('vendasDia',total);
 }
 
 function carregarHistorico(){
-  const d=document.getElementById('historicoPedidos');
-  d.innerHTML='';
-  historicoPedidos.forEach((p,i)=>{
-    let it='';
-    p.itens.forEach(x=>it+=x.nome+' R$ '+x.preco.toFixed(2)+'<br>');
-    d.innerHTML+=`<div class="historicoPedido"><strong>DK HAMBURGUERIA</strong><br>${p.dataHora}<br><strong>Cliente: ${p.nomeCliente}</strong><br>Endereço: ${p.endereco}<br>Taxa de Entrega: R$ ${p.taxaEntrega.toFixed(2)}<br>${it}<strong>TOTAL: R$ ${p.total.toFixed(2)}</strong><br><button class="botao botaoVermelho" style="margin-top:8px;" onclick="excluirPedidoDoDia(${i})">🗑️ Excluir este pedido</button></div>`;
+  const div=document.getElementById('historicoPedidos');
+  div.innerHTML='';
+  
+  if(historicoPedidos.length===0){
+    div.innerHTML='<p style="opacity:0.7;text-align:center;padding:20px;">Nenhum pedido salvo ainda.</p>';
+    return;
+  }
+  
+  historicoPedidos.forEach((pedido,indice)=>{
+    let itensTexto='';
+    pedido.itens.forEach(item=>{
+      itensTexto+='• '+item.nome+' — R$ '+item.preco.toFixed(2)+'<br>';
+    });
+    div.innerHTML+=`
+      <div class="historicoPedido">
+        <strong>#${indice+1} — ${pedido.dataHora}</strong><br>
+        <strong>Cliente:</strong> ${pedido.nomeCliente}<br>
+        <strong>Endereço:</strong> ${pedido.endereco||'—'}<br>
+        <strong>Itens:</strong><br>
+        ${itensTexto}
+        ${pedido.taxaEntrega>0 ? '<strong>Entrega:</strong> R$ '+pedido.taxaEntrega.toFixed(2)+'<br>':''}
+        <strong style="color:#D4AF37;font-size:16px;">TOTAL: R$ ${pedido.total.toFixed(2)}</strong><br>
+        <button class="botao botaoVermelho" style="margin-top:8px;padding:8px;" onclick="excluirPedido(${indice})">🗑️ Excluir este pedido</button>
+      </div>
+    `;
   });
 }
 
-function excluirPedidoDoDia(i){
-  if(!confirm('⚠️ Tem certeza que deseja excluir este pedido?'))return;
-  historicoPedidos.splice(i,1);
+function excluirPedido(indice){
+  if(!confirm('Excluir este pedido?'))return;
+  historicoPedidos.splice(indice,1);
   salvarLocal('historicoPedidos',historicoPedidos);
   carregarHistorico();
   calcularTotalDoDia();
 }
 
 function imprimirPedido(){
-  const nc=document.getElementById('nomeCliente').value;
-  const ec=document.getElementById('enderecoCliente').value;
-  const tx=Number(document.getElementById('taxaEntrega').value)||0;
-  
+  const nomeCli=document.getElementById('nomeCliente').value||'Cliente';
+  const endCli=document.getElementById('enderecoCliente').value||'';
+  const taxa=Number(document.getElementById('taxaEntrega').value)||0;
+
   const agrupado={};
   itensPedidoAtual.forEach(i=>{
-    if(!agrupado[i.nome]) agrupado[i.nome]={qtd:0,preco:i.preco};
+    if(!agrupado[i.nome])agrupado[i.nome]={qtd:0,preco:i.preco};
     agrupado[i.nome].qtd++;
   });
 
   let subtotal=0;
-  let txt='';
-  txt+='      DK HAMBURGUERIA\\n';
-  txt+='   Sabor de Outro Nível!\\n';
-  txt+='--------------------------------\\n';
-  txt+='Pedido: '+new Date().toLocaleString('pt-BR')+'\\n';
-  txt+='Cliente: '+nc+'\\n';
-  txt+='Endereço: '+ec+'\\n';
-  if(tx>0) txt+='Entrega: R$ '+tx.toFixed(2)+'\\n';
-  txt+='--------------------------------\\n';
-  txt+='ITENS:\\n';
+  let texto='';
+  texto+='==========================\\n';
+  texto+='    DK HAMBURGUERIA\\n';
+  texto+='==========================\\n';
+  texto+='DATA: '+new Date().toLocaleString('pt-BR')+'\\n';
+  texto+='CLIENTE: '+nomeCli+'\\n';
+  if(endCli)texto+='ENDEREÇO: '+endCli+'\\n';
+  texto+='--------------------------\\n';
+  texto+='ITENS:\\n';
+  
   for(const nome in agrupado){
     const item=agrupado[nome];
-    const st=item.qtd*item.preco;
-    subtotal+=st;
-    txt+=item.qtd+'x '+nome+'\\n';
-    txt+='       R$ '+st.toFixed(2)+'\\n';
+    const valorItem=item.qtd*item.preco;
+    subtotal+=valorItem;
+    texto+=item.qtd+'x '+nome+'\\n';
+    texto+='      R$ '+valorItem.toFixed(2)+'\\n';
   }
-  txt+='--------------------------------\\n';
-  txt+='SUBTOTAL....: R$ '+subtotal.toFixed(2)+'\\n';
-  if(tx>0) txt+='ENTREGA.....: R$ '+tx.toFixed(2)+'\\n';
-  txt+='--------------------------------\\n';
-  txt+='TOTAL.......: R$ '+(subtotal+tx).toFixed(2)+'\\n';
-  txt+='--------------------------------\\n';
-  txt+='  Obrigado pela preferência!\\n';
-  txt+='    Volte sempre! :)\\n\\n\\n';
   
-  window.location.href='rawbt://print?text='+encodeURIComponent(txt);
+  texto+='--------------------------\\n';
+  texto+='SUBTOTAL....: R$ '+subtotal.toFixed(2)+'\\n';
+  if(taxa>0)texto+='ENTREGA.....: R$ '+taxa.toFixed(2)+'\\n';
+  texto+='--------------------------\\n';
+  texto+='TOTAL.......: R$ '+(subtotal+taxa).toFixed(2)+'\\n';
+  texto+='==========================\\n';
+  texto+='Obrigado! Volte sempre!\\n';
+  texto+='\\n\\n\\n';
+
+  console.log('Imprimindo...');
+  window.location.href='rawbt://print?text='+encodeURIComponent(texto);
 }
 
 function salvarEDownloadDia(){
-  calcularTotalDoDia();
-  const d=new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
-  let r='DK HAMBURGUERIA - RELATÓRIO DE VENDAS\\n';
-  r+='Gerado em: '+new Date().toLocaleString('pt-BR')+'\\n';
-  r+='Quantidade de pedidos: '+historicoPedidos.length+'\\n';
-  r+='----------------------------------------\\n';
-  for(let i=0;i<historicoPedidos.length;i++){
-    const p=historicoPedidos[i];
-    r+='PEDIDO '+(i+1)+'\\n';
-    r+='Data/Hora: '+p.dataHora+'\\n';
-    r+='Cliente: '+p.nomeCliente+'\\n';
-    r+='Endereço: '+p.endereco+'\\n';
-    r+='Taxa de Entrega: R$ '+p.taxaEntrega.toFixed(2)+'\\n';
-    r+='Itens:\\n';
-    const agrupado={};
-    p.itens.forEach(x=>{
-      if(!agrupado[x.nome]) agrupado[x.nome]={qtd:0,preco:x.preco};
-      agrupado[x.nome].qtd++;
-    });
-    for(const nome in agrupado){
-      const item=agrupado[nome];
-      r+='  '+item.qtd+'x '+nome+'  R$ '+(item.qtd*item.preco).toFixed(2)+'\\n';
-    }
-    r+='TOTAL: R$ '+p.total.toFixed(2)+'\\n';
-    r+='----------------------------------------\\n';
+  if(historicoPedidos.length===0){
+    alert('⚠️ Nenhum pedido salvo ainda!');
+    return;
   }
-  let g=0;
-  historicoPedidos.forEach(x=>g+=x.total);
-  r+='TOTAL GERAL DO DIA: R$ '+g.toFixed(2)+'\\n';
-  baixarArquivoTexto('vendas_'+d+'.txt',r);
+  
+  calcularTotalDoDia();
+  const dataArquivo=new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+  let relatorio='';
+  relatorio+='==============================\\n';
+  relatorio+='   DK HAMBURGUERIA\\n';
+  relatorio+='RELATÓRIO DE VENDAS — '+new Date().toLocaleDateString('pt-BR')+'\\n';
+  relatorio+='==============================\\n\\n';
+  
+  let totalGeral=0;
+  historicoPedidos.forEach((pedido,indice)=>{
+    totalGeral+=pedido.total;
+    relatorio+='PEDIDO '+(indice+1)+' — '+pedido.dataHora+'\\n';
+    relatorio+='Cliente: '+pedido.nomeCliente+'\\n';
+    if(pedido.endereco)relatorio+='Endereço: '+pedido.endereco+'\\n';
+    relatorio+='Itens:\\n';
+    pedido.itens.forEach(item=>{
+      relatorio+='  - '+item.nome+'  R$ '+item.preco.toFixed(2)+'\\n';
+    });
+    if(pedido.taxaEntrega>0)relatorio+='  Entrega: R$ '+pedido.taxaEntrega.toFixed(2)+'\\n';
+    relatorio+='TOTAL: R$ '+pedido.total.toFixed(2)+'\\n';
+    relatorio+='------------------------------\\n\\n';
+  });
+  
+  relatorio+='\\n==============================\\n';
+  relatorio+='TOTAL GERAL DO DIA: R$ '+totalGeral.toFixed(2)+'\\n';
+  relatorio+='Quantidade de pedidos: '+historicoPedidos.length+'\\n';
+  relatorio+='==============================\\n';
+  
+  baixarArquivoTexto('vendas_'+dataArquivo+'.txt',relatorio);
   alert('💾 Relatório baixado com sucesso!');
 }
 
 function limparHistoricoDia(){
-  if(!confirm('⚠️ Faça o download do relatório primeiro! Limpar tudo?'))return;
+  if(historicoPedidos.length===0){
+    alert('Já está vazio!');
+    return;
+  }
+  if(!confirm('⚠️ Primeiro faça o download do relatório!\\nTem certeza que deseja apagar TODOS os pedidos?'))return;
   historicoPedidos=[];
   salvarLocal('historicoPedidos',historicoPedidos);
   carregarHistorico();
   calcularTotalDoDia();
-  alert('🗑️ Limpo! Pronto para o próximo dia!')
+  alert('🗑️ Histórico limpo! Pronto para o próximo dia!');
 }
 
 function cadastrarLanche(){
-  const n=document.getElementById('nomeLancheNovo').value.trim();
-  const v=Number(document.getElementById('precoLancheNovo').value);
-  if(!n||!v||v<=0){alert('⚠️ Preencha nome e preço válido!');return}
-  lanches.push({nome:n,preco:v});
-  salvarLocal('lanches',lanches);
-  document.getElementById('nomeLancheNovo').value='';
-  document.getElementById('precoLancheNovo').value='';
-  carregarLanchesPedido();
-  carregarListaCadastrados();
-  alert('✅ Lanche cadastrado!');
-}
-
-function carregarListaCadastrados(){
-  const d=document.getElementById('listaLanchesCadastrados');
-  d.innerHTML='';
-  lanches.forEach((l,i)=>{
-    d.innerHTML+=`<div class="item"><span>${l.nome} — R$ ${Number(l.preco).toFixed(2)}</span><button class="botao botaoVermelho" style="width:auto;padding:8px 12px;" onclick="excluirLanche(${i})">Excluir</button></div>`;
-  });
-}
-
-function excluirLanche(i){
-  lanches.splice(i,1);
-  salvarLocal('lanches',lanches);
-  carregarLanchesPedido();
-  carregarListaCadastrados();
-}
-</script>
-</body>
-</html>
+  const nome=document.getElementById('nomeLancheNovo').value.trim();
+  const preco=Number(document.getElementById('precoLancheNovo').value);
+  if(!nome||!preco||preco<=0){
+    alert('⚠️ Digite nome e preço válido!');
+    return;
+  }
+  lanches.push({nome:nome,preco:preco});
+  salvarLocal('lanches',lanches
