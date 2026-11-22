@@ -84,54 +84,22 @@ input {width:100%;padding:11px;border-radius:8px;border:1px solid #7b2cbf;backgr
 </div>
 
 <script>
-let abaAtual=0;
-let lanches=[];
-let itensPedidoAtual=[];
-let historicoPedidos=[];
+let abaAtual=0, lanches=[], itensPedidoAtual=[], historicoPedidos=[];
 
-function salvarLocal(chave,valor){
-  try{
-    localStorage.setItem(chave,JSON.stringify(valor));
-    return true;
-  }catch(e){
-    console.error('Erro ao salvar:',e);
-    return false;
-  }
-}
-
-function carregarLocal(chave){
-  try{
-    const dados=localStorage.getItem(chave);
-    return dados ? JSON.parse(dados) : [];
-  }catch(e){
-    console.error('Erro ao carregar:',e);
-    return [];
-  }
-}
-
-function baixarArquivoTexto(nome,texto){
-  const blob=new Blob([texto],{type:'text/plain'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  a.download=nome;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
+function salvarLocal(c,v){try{localStorage.setItem(c,JSON.stringify(v));return true}catch(e){return false}}
+function carregarLocal(c){try{const d=localStorage.getItem(c);return d?JSON.parse(d):[]}catch(e){return []}}
+function baixarArquivoTexto(n,t){const b=new Blob([t],{type:'text/plain'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=n;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u)}
 
 document.addEventListener('DOMContentLoaded',function(){
   lanches=carregarLocal('lanches');
   historicoPedidos=carregarLocal('historicoPedidos');
-  console.log('Carregado:',historicoPedidos.length,'pedidos');
   mudarAba(0);
 });
 
 function mudarAba(n){
   abaAtual=n;
-  document.querySelectorAll('.conteudoAba').forEach((el,i)=>el.classList.toggle('visivel',i===n));
-  document.querySelectorAll('.botaoAba').forEach((el,i)=>el.classList.toggle('ativa',i===n));
+  document.querySelectorAll('.conteudoAba').forEach((e,i)=>e.classList.toggle('visivel',i===n));
+  document.querySelectorAll('.botaoAba').forEach((e,i)=>e.classList.toggle('ativa',i===n));
   carregarLanchesPedido();
   carregarListaCadastrados();
   carregarHistorico();
@@ -139,13 +107,10 @@ function mudarAba(n){
 }
 
 function adicionarComboAoPedido(){
-  const nome=document.getElementById('nomeCombo').value.trim();
-  const valor=Number(document.getElementById('valorCombo').value);
-  if(!nome||!valor||valor<=0){
-    alert('⚠️ Digite nome e valor do combo!');
-    return;
-  }
-  itensPedidoAtual.push({nome:'COMBO: '+nome,preco:valor});
+  const n=document.getElementById('nomeCombo').value.trim();
+  const v=Number(document.getElementById('valorCombo').value);
+  if(!n||!v||v<=0){alert('⚠️ Preencha nome e valor do combo!');return}
+  itensPedidoAtual.push({nome:'🎁 '+n,preco:v});
   document.getElementById('nomeCombo').value='';
   document.getElementById('valorCombo').value='';
   atualizarItensPedido();
@@ -153,237 +118,144 @@ function adicionarComboAoPedido(){
 }
 
 function carregarLanchesPedido(){
-  const div=document.getElementById('listaLanchesPedido');
-  div.innerHTML='';
+  const d=document.getElementById('listaLanchesPedido');
+  d.innerHTML='';
   lanches.forEach(l=>{
-    const qtd=contarItemPedido(l.nome);
-    div.innerHTML+=`
-      <div class="item">
-        <span>${l.nome} — R$ ${Number(l.preco).toFixed(2)}</span>
-        <div class="botoesQuantidade">
-          <button class="botaoMenos" onclick="removerUmDoPedido('${l.nome}')">−</button>
-          <span class="quantidadeItem">${qtd}</span>
-          <button class="botaoMais" onclick="adicionarAoPedido('${l.nome}',${l.preco})">+</button>
-        </div>
-      </div>
-    `;
+    const q=contarItemPedido(l.nome);
+    d.innerHTML+=`<div class="item"><span>${l.nome} — R$ ${Number(l.preco).toFixed(2)}</span><div class="botoesQuantidade"><button class="botaoMenos" onclick="removerUmDoPedido('${l.nome}')">−</button><span class="quantidadeItem">${q}</span><button class="botaoMais" onclick="adicionarAoPedido('${l.nome}',${l.preco})">+</button></div></div>`;
   });
 }
 
-function contarItemPedido(nome){
-  return itensPedidoAtual.filter(i=>i.nome===nome).length;
-}
-
-function adicionarAoPedido(nome,preco){
-  itensPedidoAtual.push({nome:nome,preco:preco});
-  atualizarItensPedido();
-  carregarLanchesPedido();
-}
-
-function removerUmDoPedido(nome){
-  const indice=itensPedidoAtual.findIndex(i=>i.nome===nome);
-  if(indice!==-1){
-    itensPedidoAtual.splice(indice,1);
-    atualizarItensPedido();
-    carregarLanchesPedido();
-  }
-}
+function contarItemPedido(n){return itensPedidoAtual.filter(i=>i.nome===n).length}
+function adicionarAoPedido(n,v){itensPedidoAtual.push({nome:n,preco:v});atualizarItensPedido();carregarLanchesPedido()}
+function removerUmDoPedido(n){const i=itensPedidoAtual.findIndex(x=>x.nome===n);if(i!==-1){itensPedidoAtual.splice(i,1);atualizarItensPedido();carregarLanchesPedido()}}
 
 function atualizarItensPedido(){
-  const div=document.getElementById('itensDoPedido');
-  div.innerHTML='';
-  itensPedidoAtual.forEach((item,i)=>{
-    div.innerHTML+=`
-      <div class="item">
-        <span>${item.nome} — R$ ${item.preco.toFixed(2)}</span>
-        <button class="botao botaoVermelho" style="width:auto;padding:6px 10px;" onclick="removerItem(${i})">✕</button>
-      </div>
-    `;
+  const d=document.getElementById('itensDoPedido');
+  d.innerHTML='';
+  itensPedidoAtual.forEach((x,i)=>{
+    d.innerHTML+=`<div class="item"><span>${x.nome} — R$ ${x.preco.toFixed(2)}</span><button class="botao botaoVermelho" style="width:auto;padding:6px 10px;" onclick="removerItem(${i})">✕</button></div>`;
   });
 }
 
-function removerItem(indice){
-  itensPedidoAtual.splice(indice,1);
-  atualizarItensPedido();
-  carregarLanchesPedido();
-}
+function removerItem(i){itensPedidoAtual.splice(i,1);atualizarItensPedido();carregarLanchesPedido()}
 
 function finalizarPedido(){
-  const nomeCli=document.getElementById('nomeCliente').value.trim();
-  const endCli=document.getElementById('enderecoCliente').value.trim();
-  const taxa=Number(document.getElementById('taxaEntrega').value)||0;
+  const nc=document.getElementById('nomeCliente').value.trim();
+  const ec=document.getElementById('enderecoCliente').value.trim();
+  const tx=Number(document.getElementById('taxaEntrega').value)||0;
+  if(!nc){alert('⚠️ Digite o nome do cliente!');return}
+  if(itensPedidoAtual.length===0){alert('⚠️ Adicione pelo menos um item!');return}
+  
+  let t=0;
+  itensPedidoAtual.forEach(i=>t+=i.preco);
+  t+=tx;
 
-  if(!nomeCli){
-    alert('⚠️ Digite o nome do cliente!');
-    return;
-  }
-  if(itensPedidoAtual.length===0){
-    alert('⚠️ Adicione pelo menos um item!');
-    return;
-  }
-
-  let totalItens=0;
-  itensPedidoAtual.forEach(i=>totalItens+=i.preco);
-  const totalFinal=totalItens+taxa;
-
-  const pedido={
-    id:Date.now(),
+  const p={
     dataHora:new Date().toLocaleString('pt-BR'),
-    nomeCliente:nomeCli,
-    endereco:endCli,
-    taxaEntrega:taxa,
+    nomeCliente:nc,
+    endereco:ec,
+    taxaEntrega:tx,
     itens:[...itensPedidoAtual],
-    total:totalFinal
+    total:t
   };
-
-  historicoPedidos.push(pedido);
+  
+  historicoPedidos.push(p);
   salvarLocal('historicoPedidos',historicoPedidos);
-  
-  console.log('Pedido salvo! Total:',historicoPedidos.length);
-  
   carregarHistorico();
   calcularTotalDoDia();
-
+  
   itensPedidoAtual=[];
   document.getElementById('nomeCliente').value='';
   document.getElementById('enderecoCliente').value='';
   document.getElementById('taxaEntrega').value='';
   atualizarItensPedido();
   carregarLanchesPedido();
-
-  alert('✅ Pedido salvo! Total: R$ '+totalFinal.toFixed(2));
+  
+  alert('✅ Pedido salvo! Total: R$ '+t.toFixed(2));
 }
 
 function calcularTotalDoDia(){
-  let total=0;
-  historicoPedidos.forEach(p=>total+=p.total);
-  document.getElementById('somaDia').textContent=total.toFixed(2);
-  salvarLocal('vendasDia',total);
+  let t=0;
+  historicoPedidos.forEach(p=>t+=p.total);
+  document.getElementById('somaDia').textContent=t.toFixed(2);
+  salvarLocal('vendasDia',t);
 }
 
 function carregarHistorico(){
-  const div=document.getElementById('historicoPedidos');
-  div.innerHTML='';
-  
-  if(historicoPedidos.length===0){
-    div.innerHTML='<p style="opacity:0.7;text-align:center;padding:20px;">Nenhum pedido salvo ainda.</p>';
-    return;
-  }
-  
-  historicoPedidos.forEach((pedido,indice)=>{
-    let itensTexto='';
-    pedido.itens.forEach(item=>{
-      itensTexto+='• '+item.nome+' — R$ '+item.preco.toFixed(2)+'<br>';
-    });
-    div.innerHTML+=`
-      <div class="historicoPedido">
-        <strong>#${indice+1} — ${pedido.dataHora}</strong><br>
-        <strong>Cliente:</strong> ${pedido.nomeCliente}<br>
-        <strong>Endereço:</strong> ${pedido.endereco||'—'}<br>
-        <strong>Itens:</strong><br>
-        ${itensTexto}
-        ${pedido.taxaEntrega>0 ? '<strong>Entrega:</strong> R$ '+pedido.taxaEntrega.toFixed(2)+'<br>':''}
-        <strong style="color:#D4AF37;font-size:16px;">TOTAL: R$ ${pedido.total.toFixed(2)}</strong><br>
-        <button class="botao botaoVermelho" style="margin-top:8px;padding:8px;" onclick="excluirPedido(${indice})">🗑️ Excluir este pedido</button>
-      </div>
-    `;
+  const d=document.getElementById('historicoPedidos');
+  d.innerHTML='';
+  if(historicoPedidos.length===0){d.innerHTML='<p style="opacity:0.7;text-align:center;padding:20px;">Nenhum pedido salvo ainda.</p>';return}
+  historicoPedidos.forEach((p,i)=>{
+    let it='';
+    p.itens.forEach(x=>it+='• '+x.nome+' — R$ '+x.preco.toFixed(2)+'<br>');
+    d.innerHTML+=`<div class="historicoPedido"><strong>#${i+1} — ${p.dataHora}</strong><br><strong>Cliente:</strong> ${p.nomeCliente}<br>${p.endereco?'<strong>Endereço:</strong> '+p.endereco+'<br>':''}<strong>Itens:</strong><br>${it}${p.taxaEntrega>0?'<strong>Entrega:</strong> R$ '+p.taxaEntrega.toFixed(2)+'<br>':''}<strong style="color:#D4AF37;font-size:16px;">TOTAL: R$ ${p.total.toFixed(2)}</strong><br><button class="botao botaoVermelho" style="margin-top:8px;padding:8px;" onclick="excluirPedido(${i})">🗑️ Excluir este pedido</button></div>`;
   });
 }
 
-function excluirPedido(indice){
-  if(!confirm('Excluir este pedido?'))return;
-  historicoPedidos.splice(indice,1);
-  salvarLocal('historicoPedidos',historicoPedidos);
-  carregarHistorico();
-  calcularTotalDoDia();
-}
+function excluirPedido(i){if(!confirm('Excluir este pedido?'))return;historicoPedidos.splice(i,1);salvarLocal('historicoPedidos',historicoPedidos);carregarHistorico();calcularTotalDoDia()}
 
 function imprimirPedido(){
-  const nomeCli=document.getElementById('nomeCliente').value||'Cliente';
-  const endCli=document.getElementById('enderecoCliente').value||'';
-  const taxa=Number(document.getElementById('taxaEntrega').value)||0;
-
+  const nc=document.getElementById('nomeCliente').value||'Cliente';
+  const ec=document.getElementById('enderecoCliente').value||'';
+  const tx=Number(document.getElementById('taxaEntrega').value)||0;
   const agrupado={};
-  itensPedidoAtual.forEach(i=>{
-    if(!agrupado[i.nome])agrupado[i.nome]={qtd:0,preco:i.preco};
-    agrupado[i.nome].qtd++;
-  });
-
-  let subtotal=0;
-  let texto='';
-  texto+='==========================\\n';
-  texto+='    DK HAMBURGUERIA\\n';
-  texto+='==========================\\n';
-  texto+='DATA: '+new Date().toLocaleString('pt-BR')+'\\n';
-  texto+='CLIENTE: '+nomeCli+'\\n';
-  if(endCli)texto+='ENDEREÇO: '+endCli+'\\n';
-  texto+='--------------------------\\n';
-  texto+='ITENS:\\n';
-  
-  for(const nome in agrupado){
-    const item=agrupado[nome];
-    const valorItem=item.qtd*item.preco;
-    subtotal+=valorItem;
-    texto+=item.qtd+'x '+nome+'\\n';
-    texto+='      R$ '+valorItem.toFixed(2)+'\\n';
+  itensPedidoAtual.forEach(i=>{if(!agrupado[i.nome])agrupado[i.nome]={qtd:0,preco:i.preco};agrupado[i.nome].qtd++});
+  let st=0,txt='';
+  txt+='==========================\\n';
+  txt+='    DK HAMBURGUERIA\\n';
+  txt+='==========================\\n';
+  txt+='DATA: '+new Date().toLocaleString('pt-BR')+'\\n';
+  txt+='CLIENTE: '+nc+'\\n';
+  if(ec)txt+='ENDEREÇO: '+ec+'\\n';
+  txt+='--------------------------\\n';
+  txt+='ITENS:\\n';
+  for(const n in agrupado){
+    const x=agrupado[n],v=x.qtd*x.preco;st+=v;
+    txt+=x.qtd+'x '+n+'\\n';
+    txt+='      R$ '+v.toFixed(2)+'\\n';
   }
-  
-  texto+='--------------------------\\n';
-  texto+='SUBTOTAL....: R$ '+subtotal.toFixed(2)+'\\n';
-  if(taxa>0)texto+='ENTREGA.....: R$ '+taxa.toFixed(2)+'\\n';
-  texto+='--------------------------\\n';
-  texto+='TOTAL.......: R$ '+(subtotal+taxa).toFixed(2)+'\\n';
-  texto+='==========================\\n';
-  texto+='Obrigado! Volte sempre!\\n';
-  texto+='\\n\\n\\n';
-
-  console.log('Imprimindo...');
-  window.location.href='rawbt://print?text='+encodeURIComponent(texto);
+  txt+='--------------------------\\n';
+  txt+='SUBTOTAL....: R$ '+st.toFixed(2)+'\\n';
+  if(tx>0)txt+='ENTREGA.....: R$ '+tx.toFixed(2)+'\\n';
+  txt+='--------------------------\\n';
+  txt+='TOTAL.......: R$ '+(st+tx).toFixed(2)+'\\n';
+  txt+='==========================\\n';
+  txt+='Obrigado! Volte sempre!\\n';
+  txt+='\\n\\n\\n';
+  window.location.href='rawbt://print?text='+encodeURIComponent(txt);
 }
 
 function salvarEDownloadDia(){
-  if(historicoPedidos.length===0){
-    alert('⚠️ Nenhum pedido salvo ainda!');
-    return;
-  }
-  
+  if(historicoPedidos.length===0){alert('⚠️ Nenhum pedido salvo ainda!');return}
   calcularTotalDoDia();
-  const dataArquivo=new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
-  let relatorio='';
-  relatorio+='==============================\\n';
-  relatorio+='   DK HAMBURGUERIA\\n';
-  relatorio+='RELATÓRIO DE VENDAS — '+new Date().toLocaleDateString('pt-BR')+'\\n';
-  relatorio+='==============================\\n\\n';
-  
-  let totalGeral=0;
-  historicoPedidos.forEach((pedido,indice)=>{
-    totalGeral+=pedido.total;
-    relatorio+='PEDIDO '+(indice+1)+' — '+pedido.dataHora+'\\n';
-    relatorio+='Cliente: '+pedido.nomeCliente+'\\n';
-    if(pedido.endereco)relatorio+='Endereço: '+pedido.endereco+'\\n';
-    relatorio+='Itens:\\n';
-    pedido.itens.forEach(item=>{
-      relatorio+='  - '+item.nome+'  R$ '+item.preco.toFixed(2)+'\\n';
-    });
-    if(pedido.taxaEntrega>0)relatorio+='  Entrega: R$ '+pedido.taxaEntrega.toFixed(2)+'\\n';
-    relatorio+='TOTAL: R$ '+pedido.total.toFixed(2)+'\\n';
-    relatorio+='------------------------------\\n\\n';
+  const d=new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+  let r='==============================\\n';
+  r+='   DK HAMBURGUERIA\\n';
+  r+='RELATÓRIO DE VENDAS — '+new Date().toLocaleDateString('pt-BR')+'\\n';
+  r+='==============================\\n\\n';
+  let tg=0;
+  historicoPedidos.forEach((p,i)=>{
+    tg+=p.total;
+    r+='PEDIDO '+(i+1)+' — '+p.dataHora+'\\n';
+    r+='Cliente: '+p.nomeCliente+'\\n';
+    if(p.endereco)r+='Endereço: '+p.endereco+'\\n';
+    r+='Itens:\\n';
+    p.itens.forEach(x=>r+='  - '+x.nome+'  R$ '+x.preco.toFixed(2)+'\\n');
+    if(p.taxaEntrega>0)r+='  Entrega: R$ '+p.taxaEntrega.toFixed(2)+'\\n';
+    r+='TOTAL: R$ '+p.total.toFixed(2)+'\\n';
+    r+='------------------------------\\n\\n';
   });
-  
-  relatorio+='\\n==============================\\n';
-  relatorio+='TOTAL GERAL DO DIA: R$ '+totalGeral.toFixed(2)+'\\n';
-  relatorio+='Quantidade de pedidos: '+historicoPedidos.length+'\\n';
-  relatorio+='==============================\\n';
-  
-  baixarArquivoTexto('vendas_'+dataArquivo+'.txt',relatorio);
+  r+='\\n==============================\\n';
+  r+='TOTAL GERAL DO DIA: R$ '+tg.toFixed(2)+'\\n';
+  r+='Quantidade de pedidos: '+historicoPedidos.length+'\\n';
+  r+='==============================\\n';
+  baixarArquivoTexto('vendas_'+d+'.txt',r);
   alert('💾 Relatório baixado com sucesso!');
 }
 
 function limparHistoricoDia(){
-  if(historicoPedidos.length===0){
-    alert('Já está vazio!');
-    return;
-  }
+  if(historicoPedidos.length===0){alert('Já está vazio!');return}
   if(!confirm('⚠️ Primeiro faça o download do relatório!\\nTem certeza que deseja apagar TODOS os pedidos?'))return;
   historicoPedidos=[];
   salvarLocal('historicoPedidos',historicoPedidos);
@@ -393,11 +265,27 @@ function limparHistoricoDia(){
 }
 
 function cadastrarLanche(){
-  const nome=document.getElementById('nomeLancheNovo').value.trim();
-  const preco=Number(document.getElementById('precoLancheNovo').value);
-  if(!nome||!preco||preco<=0){
-    alert('⚠️ Digite nome e preço válido!');
-    return;
-  }
-  lanches.push({nome:nome,preco:preco});
-  salvarLocal('lanches',lanches
+  const n=document.getElementById('nomeLancheNovo').value.trim();
+  const v=Number(document.getElementById('precoLancheNovo').value);
+  if(!n||!v||v<=0){alert('⚠️ Digite nome e preço válido!');return}
+  lanches.push({nome:n,preco:v});
+  salvarLocal('lanches',lanches);
+  document.getElementById('nomeLancheNovo').value='';
+  document.getElementById('precoLancheNovo').value='';
+  carregarLanchesPedido();
+  carregarListaCadastrados();
+  alert('✅ Lanche cadastrado!');
+}
+
+function carregarListaCadastrados(){
+  const d=document.getElementById('listaLanchesCadastrados');
+  d.innerHTML='';
+  lanches.forEach((l,i)=>{
+    d.innerHTML+=`<div class="item"><span>${l.nome} — R$ ${Number(l.preco).toFixed(2)}</span><button class="botao botaoVermelho" style="width:auto;padding:6px 10px;" onclick="excluirLanche(${i})">Excluir</button></div>`;
+  });
+}
+
+function excluirLanche(i){lanches.splice(i,1);salvarLocal('lanches',lanches);carregarLanchesPedido();carregarListaCadastrados()}
+</script>
+</body>
+</html>
